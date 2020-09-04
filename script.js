@@ -1,12 +1,4 @@
 
-// playMode = {
-//   currentMove: 1 // 1 / 2
-//   // if current move is 2 -> check for match in card id 
-//   // update ui
-//   , 
-//   wrongGuessCounter: NUMBER
-//
-// }
 
 //TODO - start game popup
 //when player reach page for the first time / when user choose to play new game (click btn)
@@ -14,26 +6,7 @@
 
 //TODO header:  "new game btn", "hello player name",  wrongGuessCounter, "timer", "level"+"theme" status
 // # levels": “easy” (12)(6 types) , medium (18)(9 types) and hard(24)(12 type)
-// create level -> function for lop create each card twice & push to array loop by level
 // create theme -> cardPattern1 css class hold background var base on theme
-
-//TODO Create Cards
-// create 6 type of cards new Card(1, "cardPattern1, false ")
-// add to cards array each card twice
-// shuffle array
-
-//TODO Draw Cards on screen 
-// iterate cards array and render ui
-//function set cars pattern by its type
-// add click event listener 
-
-//TODO Game Mode - play
-// click on card (stay flip) 
-// play mode - counter 1 (save card in play mode)
-// click on second card - counter 2 (save card in play mode)
-// when counter 2 put overlay for 1 seconds on all screen
-// card match -> stay flip, counter 0 -> update isFlipped = TRUE
-// card not match -> flip again counter 0 -> update isFlipped = FALSE, wrong Guess counter ++
 
 //TODO GameOver
 // when all cards isFlipped = TRUE -> game over pop up a “You won!” overlay with a new game button.
@@ -109,6 +82,36 @@ function handleCardClick(event, cardId){
   console.log(event.currentTarget, cardId);
 }
 
+/***************************************** Play Mode ***************************************************/
+//TODO Game Mode - play
+
+// play mode - counter 1 (save card in play mode)
+// click on second card - counter 2 (save card in play mode)
+// when counter 2 put overlay for 1 seconds on all screen
+// card match -> stay flip, counter 0 -> update isFlipped = TRUE
+// card not match -> flip again counter 0 -> update isFlipped = FALSE, wrong Guess counter ++
+
+let currentMoveFlipCardsCounter = 0;
+/**
+ * first click on card: - remove from el card cover css class
+ *                      - displayCardHandler -> remove (nothing happens when click current card)
+ *                      - currentMoveFlipCardsCounter ++ (1)
+ * second click on card: - remove from el card cover css class
+ *                      - currentMoveFlipCardsCounter ++ (1)
+ *                      - displayCardHandler -> remove (nothing happens when click current card)
+ *                       currentMoveFlipCardsCounter ++ (2)
+ * 
+ *                        if ( currentMoveFlipCardsCounter = (2)) {
+ *                            put overlay for 1 second -> card aren't clickable
+ *                            currentMoveFlipCardsCounter = 0 
+ *                            
+ *                            match? ->  rightGuess ++; (check if right guess = pattern typed => user win)
+ *                            not match -> wrong guess ++ 
+ *                                      -> Add cover css class  
+ *                                      -> add event listener displayCardHandler                
+ * 
+ * }
+ */
 
 // DATA
 let cardsStack = createCardsStackData(6);
