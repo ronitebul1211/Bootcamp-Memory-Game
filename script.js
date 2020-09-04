@@ -78,16 +78,41 @@ function shuffleCards(cardsStack){
   //TODO: Understand algorithem
   for(let i = cardsStack.length-1; i > 0; i--){
     let j = Math.floor(Math.random() * i);
-    console.log(j);
     let temp = cardsStack[i] 
     cardsStack[i] = cardsStack[j]
     cardsStack[j] = temp
   }
 }
 
+function renderCardsUi(cardsStackData){
+  const cardsContainerEl = document.querySelector('.cards-container');
+  
+  cardsStackData.forEach((card) => {
+    const cardEl = document.createElement('div');
+    cardEl.classList.add('card');
+    const cardInnerEl = document.createElement('div');
+    cardInnerEl.classList.add('card-pattern', getCssClassByCardType(card.getType()), 'card-cover'); 
+    cardEl.appendChild(cardInnerEl);
+    cardsContainerEl.appendChild(cardEl);
+
+    cardEl.addEventListener('click', (event) => handleCardClick(event, card.getId()))
+  });
+}
+
+function getCssClassByCardType(cardType){
+  //TODO: return different class name by type; 
+  return 'card-pattern-type1'
+}
+function handleCardClick(event, cardId){
+  console.log(event.currentTarget, cardId);
+}
+
 
 // DATA
 let cardsStack = createCardsStackData(6);
 shuffleCards(cardsStack);
+
+//UI
+renderCardsUi(cardsStack);
 
 
