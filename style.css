@@ -12,7 +12,7 @@ body{
 }
 
 .cards-container{
-  background: #2ECC71;
+  background: white;
   width: fit-content;
   display: grid;
   grid-template-columns: repeat(4 , 1fr); 
@@ -43,10 +43,10 @@ body{
   background: #2ECC71;
 }
 .card-pattern-type5{
-  background: #E74C3C;
+  background: #900C3E;
 }
 .card-pattern-type6{
-  background: #E74C3C;
+  background: #FFC300;
 }
 .card-cover{
   background: black;

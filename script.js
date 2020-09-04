@@ -19,7 +19,6 @@
 function Card(id, type, isFlipped){
   this.id = id;
   this.type = type;
-  this.isFlipped = isFlipped;
 }
 Card.prototype.getId = function(){
   return this.id;
@@ -27,9 +26,8 @@ Card.prototype.getId = function(){
 Card.prototype.getType = function(){
   return this.type;
 }
-Card.prototype.isFlipped = function(){
-  return this.isFlipped;
-}
+
+
 
 /** Data: Create cards stack that contain each card type twice  */
 function createCardsStackData(cardsTypeNum){
@@ -70,37 +68,69 @@ function renderCardsUi(cardsStackData){
     cardEl.appendChild(cardInnerEl);
     cardsContainerEl.appendChild(cardEl);
 
-    cardEl.addEventListener('click', (event) => handleCardClick(event, card.getId()))
+    cardEl.addEventListener('click', (event) => handleDisplayCardClick(event, card.getId()), { once: true })
   });
 }
 /** UI: get card pattern(css class name) by its type */
 function getCardPattern(cardType){
  return 'card-pattern-type'.concat(cardType);
 }
+/************************************************************************************************* */
 
-function handleCardClick(event, cardId){
-  console.log(event.currentTarget, cardId);
+function handleDisplayCardClick(event, cardId){
+  console.log('handleDisplayCardClick');
+
+  const cardEl = event.currentTarget; // outer
+  const cardInnerEl = event.target; // inner
+  
+  // Update UI
+  cardInnerEl.classList.remove('card-cover');
+  // Update play mode object
+  currentMove['cardsCounter']++;
+  currentMove['clickedCardsEl'].push(cardEl);
+  currentMove['clickedCardsId'].push(cardId);
+
+
+  if(currentMove['cardsCounter'] === 2) {
+    
+ //TODO ->  overlay for 1 second -> card aren't clickable
+ //TODO -> reset play mode 
+  //get current card type
+  // const currentCardType = cardsStack.filter((card) => card.getId() === currentMove.clickedCardsId[0] || card.getId() === currentMove.clickedCardsId[1]);
+  // if(currentCardType[0] === currentCardType[1]){
+  //   console.log('match');
+    
+  //   console.log(currentCardType[0], currentCardType[1]);
+  // } else {
+  //   console.log(' Not match');
+  // }
+  console.log('2 cards');
+
+  }
+  
+
+  
 }
 
 /***************************************** Play Mode ***************************************************/
 //TODO Game Mode - play
 
-// play mode - counter 1 (save card in play mode)
-// click on second card - counter 2 (save card in play mode)
-// when counter 2 put overlay for 1 seconds on all screen
-// card match -> stay flip, counter 0 -> update isFlipped = TRUE
-// card not match -> flip again counter 0 -> update isFlipped = FALSE, wrong Guess counter ++
+let cardsStack;
 
-let currentMoveFlipCardsCounter = 0;
+let currentMove = {
+  clickedCardsEl: [],
+  clickedCardsId: [],
+  cardsCounter: 0
+}
+
+
 /**
  * first click on card: - remove from el card cover css class
- *                      - displayCardHandler -> remove (nothing happens when click current card)
  *                      - currentMoveFlipCardsCounter ++ (1)
- * second click on card: - remove from el card cover css class
- *                      - currentMoveFlipCardsCounter ++ (1)
- *                      - displayCardHandler -> remove (nothing happens when click current card)
- *                       currentMoveFlipCardsCounter ++ (2)
  * 
+ * second click on card: - remove from el card cover css class
+ *                      - currentMoveFlipCardsCounter ++ (2)
+
  *                        if ( currentMoveFlipCardsCounter = (2)) {
  *                            put overlay for 1 second -> card aren't clickable
  *                            currentMoveFlipCardsCounter = 0 
@@ -114,7 +144,7 @@ let currentMoveFlipCardsCounter = 0;
  */
 
 // DATA
-let cardsStack = createCardsStackData(6);
+cardsStack = createCardsStackData(6);
 shuffleCards(cardsStack);
 
 //UI
