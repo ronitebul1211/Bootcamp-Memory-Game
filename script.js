@@ -43,19 +43,38 @@
 // 2. Add a high score functionality, that will save the name of the person with the least amounts of wrong guesses.
 
 /** Data structure - Card */
-function Card(type, patternCssClass, isFlipped){
+function Card(id, type, isFlipped){
   this.id = id;
   this.type = type;
   this.isFlipped = isFlipped;
 }
-
+Card.prototype.getId = function(){
+  return this.id;
+}
 Card.prototype.getType = function(){
   return this.type;
-}
-Card.prototype.getPatternCssClass = function(){
-  return this.patternCssClass;
 }
 Card.prototype.isFlipped = function(){
   return this.isFlipped;
 }
+
+/** Data Create cards stack that contain each card type twice  */
+function createCardsStackData(cardsTypeNum){
+  //TODO  easy: cardsTypeNum = 6 , medium: cardsTypeNum = 9, hard: cardsTypeNum = 12 
+
+  let cardsStack = [];
+  let id = 0;
+
+  for(let type = 1 ; type <= cardsTypeNum; type++ ) {
+    id++;
+    cardsStack.push(new Card(id, type, false));
+    id++;
+    cardsStack.push(new Card(id, type, false));
+  }
+  console.log(cardsStack);
+  return cardsStack;
+}
+
+
+createCardsStackData(6);
 
