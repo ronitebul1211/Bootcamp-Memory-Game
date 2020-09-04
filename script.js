@@ -84,6 +84,8 @@ function shuffleCards(cardsStack){
   }
 }
 
+
+/** UI: draw cards on ui */
 function renderCardsUi(cardsStackData){
   const cardsContainerEl = document.querySelector('.cards-container');
   
@@ -91,18 +93,18 @@ function renderCardsUi(cardsStackData){
     const cardEl = document.createElement('div');
     cardEl.classList.add('card');
     const cardInnerEl = document.createElement('div');
-    cardInnerEl.classList.add('card-pattern', getCssClassByCardType(card.getType()), 'card-cover'); 
+    cardInnerEl.classList.add('card-pattern', getCardPattern(card.getType()), 'card-cover'); 
     cardEl.appendChild(cardInnerEl);
     cardsContainerEl.appendChild(cardEl);
 
     cardEl.addEventListener('click', (event) => handleCardClick(event, card.getId()))
   });
 }
-
-function getCssClassByCardType(cardType){
-  //TODO: return different class name by type; 
-  return 'card-pattern-type1'
+/** UI: get card pattern(css class name) by its type */
+function getCardPattern(cardType){
+ return 'card-pattern-type'.concat(cardType);
 }
+
 function handleCardClick(event, cardId){
   console.log(event.currentTarget, cardId);
 }
