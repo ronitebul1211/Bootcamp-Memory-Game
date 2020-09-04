@@ -24,6 +24,7 @@
 
 //TODO Draw Cards on screen 
 // iterate cards array and render ui
+//function set cars pattern by its type
 // add click event listener 
 
 //TODO Game Mode - play
@@ -43,8 +44,8 @@
 
 /** Data structure - Card */
 function Card(type, patternCssClass, isFlipped){
+  this.id = id;
   this.type = type;
-  this.patternCssClass = patternCssClass;
   this.isFlipped = isFlipped;
 }
 
