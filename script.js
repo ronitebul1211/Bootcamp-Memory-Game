@@ -58,7 +58,7 @@ Card.prototype.isFlipped = function(){
   return this.isFlipped;
 }
 
-/** Data Create cards stack that contain each card type twice  */
+/** Data: Create cards stack that contain each card type twice  */
 function createCardsStackData(cardsTypeNum){
   //TODO  easy: cardsTypeNum = 6 , medium: cardsTypeNum = 9, hard: cardsTypeNum = 12 
 
@@ -71,10 +71,23 @@ function createCardsStackData(cardsTypeNum){
     id++;
     cardsStack.push(new Card(id, type, false));
   }
-  console.log(cardsStack);
   return cardsStack;
+}
+/** Data: shuffle cards stack */
+function shuffleCards(cardsStack){
+  //TODO: Understand algorithem
+  for(let i = cardsStack.length-1; i > 0; i--){
+    let j = Math.floor(Math.random() * i);
+    console.log(j);
+    let temp = cardsStack[i] 
+    cardsStack[i] = cardsStack[j]
+    cardsStack[j] = temp
+  }
 }
 
 
-createCardsStackData(6);
+// DATA
+let cardsStack = createCardsStackData(6);
+shuffleCards(cardsStack);
+
 
