@@ -27,40 +27,47 @@ Card.prototype.getType = function(){
   return this.type;
 }
 
-
-
-/** Data: Create cards stack that contain each card type twice  */
-function createCardsStackData(cardsTypeNum){
-  //TODO  easy: cardsTypeNum = 6 , medium: cardsTypeNum = 9, hard: cardsTypeNum = 12 
-
-  let cardsStack = [];
+/** Data structure - Cards Deck */
+const cards = {
+  cardsDeck: []
+}
+/** Create a deck of cards by size (even number) in which each card appears twice */
+cards.createCardsDeck = function (size) {
+  const typesNum = size / 2;
+  let cardsDeck = [];
   let id = 0;
-
-  for(let type = 1 ; type <= cardsTypeNum; type++ ) {
-    id++;
-    cardsStack.push(new Card(id, type, false));
-    id++;
-    cardsStack.push(new Card(id, type, false));
+  for(let type = 1 ; type <= typesNum; type++) {
+    let cardsAmount = 1
+    while(cardsAmount <= 2){
+      id++;
+      cardsDeck.push(new Card(id, type));
+      cardsAmount++;
+    }
   }
-  return cardsStack;
+  this.cardsDeck = cardsDeck;
 }
-/** Data: shuffle cards stack */
-function shuffleCards(cardsStack){
+/** Shuffle Cards Deck */
+cards.shuffleCardsDeck = function() {
   //TODO: Understand algorithem
-  for(let i = cardsStack.length-1; i > 0; i--){
+  for(let i = this.cardsDeck.length-1; i > 0; i--){
     let j = Math.floor(Math.random() * i);
-    let temp = cardsStack[i] 
-    cardsStack[i] = cardsStack[j]
-    cardsStack[j] = temp
+    let temp = this.cardsDeck[i] 
+    this.cardsDeck[i] = this.cardsDeck[j]
+    this.cardsDeck[j] = temp
   }
 }
+cards.isCardsIdentical = function (firstCardId, secondCardId){
+  const cards = this.cardsDeck.filter(card => card.getId() === firstCardId ||card.getId() === secondCardId);
+  return cards[0].getType() === cards[1].getType();
+}
+
 
 
 /** UI: draw cards on ui */
-function renderCardsUi(cardsStackData){
+function renderCardsUi(){
   const cardsContainerEl = document.querySelector('.cards-container');
   
-  cardsStackData.forEach((card) => {
+  cards.cardsDeck.forEach((card) => {
     const cardEl = document.createElement('div');
     cardEl.classList.add('card');
     const cardInnerEl = document.createElement('div');
@@ -68,60 +75,73 @@ function renderCardsUi(cardsStackData){
     cardEl.appendChild(cardInnerEl);
     cardsContainerEl.appendChild(cardEl);
 
-    cardEl.addEventListener('click', (event) => handleDisplayCardClick(event, card.getId()), { once: true })
+    cardEl.addEventListener('click', (event) => handleCardClick(event, card.getId()), { once: true })
   });
 }
 /** UI: get card pattern(css class name) by its type */
 function getCardPattern(cardType){
  return 'card-pattern-type'.concat(cardType);
 }
-/************************************************************************************************* */
-
-function handleDisplayCardClick(event, cardId){
+/** UI: handle card click */
+function handleCardClick(event, cardId){
+  
   console.log('handleDisplayCardClick');
 
   const cardEl = event.currentTarget; // outer
   const cardInnerEl = event.target; // inner
   
-  // Update UI
+  // display card UI
   cardInnerEl.classList.remove('card-cover');
-  // Update play mode object
-  currentMove['cardsCounter']++;
-  currentMove['clickedCardsEl'].push(cardEl);
-  currentMove['clickedCardsId'].push(cardId);
 
-
-  if(currentMove['cardsCounter'] === 2) {
-    
+  currentMove.saveOpenCard(cardId, cardEl);
+ 
+  if(currentMove.getOpenCardsCounter() === 2) {
+  
  //TODO ->  overlay for 1 second -> card aren't clickable
- //TODO -> reset play mode 
-  //get current card type
-  // const currentCardType = cardsStack.filter((card) => card.getId() === currentMove.clickedCardsId[0] || card.getId() === currentMove.clickedCardsId[1]);
-  // if(currentCardType[0] === currentCardType[1]){
-  //   console.log('match');
-    
-  //   console.log(currentCardType[0], currentCardType[1]);
-  // } else {
-  //   console.log(' Not match');
-  // }
-  console.log('2 cards');
 
+
+  if(cards.isCardsIdentical(currentMove.getFirstOpenCardId(), currentMove.getSecondOpenCardId())){
+    console.log("identical");
+  } else {
+    console.log("not identical");
   }
-  
-
-  
+ 
+  currentMove.reset();
+  }
 }
 
 /***************************************** Play Mode ***************************************************/
-//TODO Game Mode - play
-
-let cardsStack;
-
-let currentMove = {
-  clickedCardsEl: [],
-  clickedCardsId: [],
-  cardsCounter: 0
+//TODO Game Mode - Current Move
+const currentMove = {
+  openCardsCounter: 0,
+  openCardsEl: [],
+  openCardsId: [],
 }
+currentMove.saveOpenCard = function (cardId, cardEl) {
+  this.openCardsId.push(cardId);
+  this.openCardsEl.push(cardEl);
+  this.openCardsCounter++;
+}
+currentMove.getFirstOpenCardId = function () {
+  return this.openCardsId[0];
+}
+currentMove.getSecondOpenCardId = function () {
+  return this.openCardsId[1];
+}
+currentMove.getOpenCardsCounter = function () {
+  return this.openCardsCounter;
+}
+currentMove.reset = function () {
+  this.openCardsCounter = 0;
+  this.openCardsEl = [];
+  this.openCardsId = [];
+}
+
+
+
+
+
+
 
 
 /**
@@ -143,11 +163,12 @@ let currentMove = {
  * }
  */
 
-// DATA
-cardsStack = createCardsStackData(6);
-shuffleCards(cardsStack);
+// Cards Deck creation
+cards.createCardsDeck(12);
+cards.shuffleCardsDeck();
+
 
 //UI
-renderCardsUi(cardsStack);
+renderCardsUi();
 
 
