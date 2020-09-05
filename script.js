@@ -27,7 +27,6 @@ Card.prototype.getType = function(){
   return this.type;
 }
 
-
 /** Cards Deck Logic */
 const cardsDeck = {
   cardsDeck: [],
@@ -66,6 +65,31 @@ const cardsDeck = {
   }
 }
 
+/** Cards UI Logic */
+const cardsUi = {
+  cardsContainerEl: document.querySelector('.cards-container'),
+  getContainerEL: function(){
+    return this.cardsContainerEl;
+  },
+  getCardTypeCss: function(cardType){
+    return 'card-pattern-type'.concat(cardType);
+  },
+  showCard: function(cardEl){
+    const innerCardEl = cardEl.firstElementChild;
+    innerCardEl.classList.remove('card-cover');
+  },
+  hideCard: function(cardEl){
+    const innerCardEl = cardEl.firstElementChild;
+    innerCardEl.classList.add('card-cover');
+  },
+  makeCardsUnClickable: function(){
+    this.cardsContainerEl.classList.add('unclickable-mode');
+  },
+  makeCardsClickable: function(){
+    this.cardsContainerEl.classList.remove('unclickable-mode');
+  }
+}
+
 /** Game Mode Logic */
 const gameMode = {
   currentMove: {
@@ -97,6 +121,9 @@ const gameMode = {
     }
   },
   currentRound: {
+    playerName: '',
+    level: '',
+    theme: '',
     rightGuess: 0,
     wrongGuess: 0,
     addRightGuess: function(){
@@ -105,46 +132,28 @@ const gameMode = {
     addWrongGuess: function(){
       this.wrongGuess++;
     },
-    getRightGuesses(){
+    getRightGuesses: function(){
       return this.rightGuess;
     },
-    getWrongGuesses(){
+    getWrongGuesses: function(){
       return this.rightGuess;
     },
-  }
-}
-
-const cardsUi = {
-  cardsContainerEl: document.querySelector('.cards-container'),
-  getContainerEL: function(){
-    return this.cardsContainerEl;
-  },
-  getCardTypeCss: function(cardType){
-    return 'card-pattern-type'.concat(cardType);
-  },
-  showCard: function(cardEl){
-    const innerCardEl = cardEl.firstElementChild;
-    innerCardEl.classList.remove('card-cover');
-  },
-  hideCard: function(cardEl){
-    const innerCardEl = cardEl.firstElementChild;
-    innerCardEl.classList.add('card-cover');
-  },
-  makeCardsUnClickable: function(){
-    this.cardsContainerEl.classList.add('unclickable-mode');
-  },
-  makeCardsClickable: function(){
-    this.cardsContainerEl.classList.remove('unclickable-mode');
+    setPlayerName: function(name){
+      this.playerName = name;
+    },
+    setLevel: function(level){
+      this.level = level;
+    },
+    setTheme: function(theme){
+      this.theme = theme;
+    }
   }
 }
 
 
 
 
-
-
-
-/***************************************** Play Mode ***************************************************/
+/***************************************** Init UI & Define handlers  ***************************************************/
 
 /** UI: draw cards on ui */
 function renderCardsUi(){ 
@@ -190,12 +199,62 @@ function handleCardClick(event){
   }
 }
 
+/** UI: Display New Game Popup */
+function displayNewGamePopup(){
+  const modal = document.querySelector('.modal');
+  modal.classList.add('modal-open');
+  //New Game Pop
+  const formEl = document.querySelector('.start-play-popup');
+  formEl.addEventListener('submit', startGameHandler);
+}
+/** UI: handle New Game */
+function startGameHandler(event){
+
+  event.preventDefault(); //don't refresh the page
+  
+  const formEl = event.currentTarget;
+
+  gameMode.currentRound.setPlayerName(formEl.name.value);
+  gameMode.currentRound.setLevel(formEl.level.value);
+  gameMode.currentRound.setTheme(formEl.theme.value);
+
+  //Reset Player Name
+  formEl.name.value = '';
+  //Reset Levels UI
+  formEl.level.forEach((level) => {
+    level.checked = false;
+  });
+  formEl.level.item(0).checked = true;
+    //Reset Themes UI
+    formEl.theme.forEach((theme) => {
+      theme.checked = false;
+    });
+    formEl.theme.item(0).checked = true;
+
+    //Hide PopUp
+   const modal = document.querySelector('.modal');
+   modal.classList.remove('modal-open');
+}
+/***************************************** Play  ***************************************************/
+
+
+
 // Cards Deck creation
 cardsDeck.create(12);
 cardsDeck.shuffle();
 
 //UI
 renderCardsUi();
+displayNewGamePopup();
+
+
+
+
+
+
+
+
+
 
 
 

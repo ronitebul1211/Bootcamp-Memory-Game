@@ -12,6 +12,35 @@
 <body>
   <section class="cards-container"></section>
 
+  <div class="modal">
+      <form class="start-play-popup">
+          <input type="text" id="name" placeholder="Enter Your Name">
+
+          <label for="Levels">Level</label>
+          <div>
+              <label for="level-easy">Easy</label>
+              <input type="radio" id="level-easy" name="level" value="easy" checked>
+              <label for="level-medium">Medium</label>
+              <input type="radio" id="level-medium" name="level" value="medium">
+              <label for="level-hard">Hard</label>
+              <input type="radio" id="level-hard" name="level" value="hard">
+          </div>
+
+          <label for="Themes">Themes</label>
+          <div>
+              <label for="theme-colors">Colors</label>
+              <input type="radio" id="theme-colors" name="theme" value="colors" checked>
+              <label for="theme-numbers">Numbers</label>
+              <input type="radio" id="theme-numbers" name="theme" value="numbers">
+              <label for="theme-letters">Letters</label>
+              <input type="radio" id="theme-letters" name="theme" value="letters">
+          </div>
+          <button type="submit">START GAME</button>
+      </form>
+    
+
+  </div>
+
   <script src="script.js"></script>
 </body>
 
