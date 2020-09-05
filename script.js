@@ -27,39 +27,40 @@ Card.prototype.getType = function(){
   return this.type;
 }
 
-/** Data structure - Cards Deck */
-const cards = {
-  cardsDeck: []
-}
-/** Create a deck of cards by size (even number) in which each card appears twice */
-cards.createCardsDeck = function (size) {
-  const typesNum = size / 2;
-  let cardsDeck = [];
-  let id = 0;
-  for(let type = 1 ; type <= typesNum; type++) {
-    let cardsAmount = 1
-    while(cardsAmount <= 2){
-      id++;
-      cardsDeck.push(new Card(id, type));
-      cardsAmount++;
+/** Cards Deck Logic */
+const cardsDeck = {
+  cardsDeck: [],
+  create: function (size) {
+    /** Create a deck of cards by size (even number) in which each card appears twice */
+    const typesNum = size / 2;
+    let cardsDeck = [];
+    let id = 0;
+    for(let type = 1 ; type <= typesNum; type++) {
+      let cardsAmount = 1
+      while(cardsAmount <= 2){
+        id++;
+        cardsDeck.push(new Card(id, type));
+        cardsAmount++;
+      }
     }
+    this.cardsDeck = cardsDeck;
+  },
+  shuffle: function() {
+    //TODO: Understand algorithem
+    for(let i = this.cardsDeck.length-1; i > 0; i--){
+      let j = Math.floor(Math.random() * i);
+      let temp = this.cardsDeck[i] 
+      this.cardsDeck[i] = this.cardsDeck[j]
+      this.cardsDeck[j] = temp
+    }
+  },
+  isCardsIdentical: function (firstCardId, secondCardId){
+    const cards = this.cardsDeck.filter(card => card.getId() === firstCardId ||card.getId() === secondCardId);
+    return cards[0].getType() === cards[1].getType();
   }
-  this.cardsDeck = cardsDeck;
 }
-/** Shuffle Cards Deck */
-cards.shuffleCardsDeck = function() {
-  //TODO: Understand algorithem
-  for(let i = this.cardsDeck.length-1; i > 0; i--){
-    let j = Math.floor(Math.random() * i);
-    let temp = this.cardsDeck[i] 
-    this.cardsDeck[i] = this.cardsDeck[j]
-    this.cardsDeck[j] = temp
-  }
-}
-cards.isCardsIdentical = function (firstCardId, secondCardId){
-  const cards = this.cardsDeck.filter(card => card.getId() === firstCardId ||card.getId() === secondCardId);
-  return cards[0].getType() === cards[1].getType();
-}
+
+
 
 
 
@@ -67,7 +68,7 @@ cards.isCardsIdentical = function (firstCardId, secondCardId){
 function renderCardsUi(){
   const cardsContainerEl = document.querySelector('.cards-container');
   
-  cards.cardsDeck.forEach((card) => {
+  cardsDeck.cardsDeck.forEach((card) => {
     const cardEl = document.createElement('div');
     cardEl.classList.add('card');
     const cardInnerEl = document.createElement('div');
@@ -100,10 +101,14 @@ function handleCardClick(event, cardId){
  //TODO ->  overlay for 1 second -> card aren't clickable
 
 
-  if(cards.isCardsIdentical(currentMove.getFirstOpenCardId(), currentMove.getSecondOpenCardId())){
+  if(cardsDeck.isCardsIdentical(currentMove.getFirstOpenCardId(), currentMove.getSecondOpenCardId())){
     console.log("identical");
+    //rightGuess ++ (when right guess === cardDeckSize / 2)
   } else {
     console.log("not identical");
+    //register el again with event listener
+    //hide cards
+    //wrong guess ++ 
   }
  
   currentMove.reset();
@@ -137,38 +142,32 @@ currentMove.reset = function () {
   this.openCardsId = [];
 }
 
+const gameMode = {
+  currentRound: {
+    rightGuess: 0,
+    wrongGuess: 0,
+    addRightGuess: function(){
+      this.rightGuess++;
+    },
+    addWrongGuess: function(){
+      this.wrongGuess++;
+    },
+    getRightGuesses(){
+      return this.rightGuess;
+    },
+    getWrongGuesses(){
+      return this.rightGuess;
+    },
+  }
+}
 
-
-
-
-
-
-
-/**
- * first click on card: - remove from el card cover css class
- *                      - currentMoveFlipCardsCounter ++ (1)
- * 
- * second click on card: - remove from el card cover css class
- *                      - currentMoveFlipCardsCounter ++ (2)
-
- *                        if ( currentMoveFlipCardsCounter = (2)) {
- *                            put overlay for 1 second -> card aren't clickable
- *                            currentMoveFlipCardsCounter = 0 
- *                            
- *                            match? ->  rightGuess ++; (check if right guess = pattern typed => user win)
- *                            not match -> wrong guess ++ 
- *                                      -> Add cover css class  
- *                                      -> add event listener displayCardHandler                
- * 
- * }
- */
 
 // Cards Deck creation
-cards.createCardsDeck(12);
-cards.shuffleCardsDeck();
+cardsDeck.create(12);
+cardsDeck.shuffle();
+
 
 
 //UI
 renderCardsUi();
-
 
