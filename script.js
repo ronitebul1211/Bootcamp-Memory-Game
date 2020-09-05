@@ -30,12 +30,12 @@ Card.prototype.getType = function(){
 /** Cards Deck Logic */
 const cardsDeck = {
   cardsDeck: [],
-  create: function (size) {
-    /** Create a deck of cards by size (even number) in which each card appears twice */
-    const typesNum = size / 2;
+  cardsTypeNum: 0,
+  create: function(size) {
+    this.cardsTypeNum = size / 2;
     let cardsDeck = [];
     let id = 0;
-    for(let type = 1 ; type <= typesNum; type++) {
+    for(let type = 1 ; type <= this.cardsTypeNum; type++) {
       let cardsAmount = 1
       while(cardsAmount <= 2){
         id++;
@@ -57,6 +57,9 @@ const cardsDeck = {
   isCardsIdentical: function (firstCardId, secondCardId){
     const cards = this.cardsDeck.filter(card => card.getId() === firstCardId ||card.getId() === secondCardId);
     return cards[0].getType() === cards[1].getType();
+  },
+  getCardsTypeNum: function(){
+    return this.cardsTypeNum;
   }
 }
 
@@ -85,7 +88,7 @@ function getCardPattern(cardType){
 }
 /** UI: handle card click */
 function handleCardClick(event, cardId){
-  
+  console.log('card click');
   console.log('handleDisplayCardClick');
 
   const cardEl = event.currentTarget; // outer
@@ -94,55 +97,55 @@ function handleCardClick(event, cardId){
   // display card UI
   cardInnerEl.classList.remove('card-cover');
 
-  currentMove.saveOpenCard(cardId, cardEl);
+  gameMode.currentMove.addOpenCard(cardId, cardEl);
  
-  if(currentMove.getOpenCardsCounter() === 2) {
+  if(gameMode.currentMove.isOver()) {
   
  //TODO ->  overlay for 1 second -> card aren't clickable
 
 
-  if(cardsDeck.isCardsIdentical(currentMove.getFirstOpenCardId(), currentMove.getSecondOpenCardId())){
-    console.log("identical");
-    //rightGuess ++ (when right guess === cardDeckSize / 2)
+  if(gameMode.currentMove.isSuccessfulGuess()){
+    //Cards Identical
+    gameMode.currentRound.addRightGuess();
+    if (gameMode.currentRound.getRightGuesses() === cardsDeck.getCardsTypeNum()){
+      console.log("Game Over !");
+    }
   } else {
-    console.log("not identical");
-    //register el again with event listener
-    //hide cards
-    //wrong guess ++ 
+     //Cards Not Identical
+     console.log('not successful');
+
   }
  
-  currentMove.reset();
+  gameMode.currentMove.reset();
   }
 }
 
 /***************************************** Play Mode ***************************************************/
-//TODO Game Mode - Current Move
-const currentMove = {
-  openCardsCounter: 0,
-  openCardsEl: [],
-  openCardsId: [],
-}
-currentMove.saveOpenCard = function (cardId, cardEl) {
-  this.openCardsId.push(cardId);
-  this.openCardsEl.push(cardEl);
-  this.openCardsCounter++;
-}
-currentMove.getFirstOpenCardId = function () {
-  return this.openCardsId[0];
-}
-currentMove.getSecondOpenCardId = function () {
-  return this.openCardsId[1];
-}
-currentMove.getOpenCardsCounter = function () {
-  return this.openCardsCounter;
-}
-currentMove.reset = function () {
-  this.openCardsCounter = 0;
-  this.openCardsEl = [];
-  this.openCardsId = [];
-}
+
+
 
 const gameMode = {
+  currentMove: {
+    openCardsCounter: 0,
+    openCardsEl: [],
+    openCardsId: [],
+    addOpenCard: function (cardId, cardEl) {
+      this.openCardsId.push(cardId);
+      this.openCardsEl.push(cardEl);
+      this.openCardsCounter++;
+    },
+    isOver: function () {
+      return this.openCardsCounter === 2;
+    },
+    isSuccessfulGuess: function(){
+      return cardsDeck.isCardsIdentical(this.openCardsId[0], this.openCardsId[1]);
+    },
+    reset: function () {
+      this.openCardsCounter = 0;
+      this.openCardsEl = [];
+      this.openCardsId = [];
+    }
+  },
   currentRound: {
     rightGuess: 0,
     wrongGuess: 0,
