@@ -9,7 +9,7 @@
 // create theme -> cardPattern1 css class hold background var base on theme
 
 //TODO GameOver
-// when all cards isFlipped = TRUE -> game over pop up a “You won!” overlay with a new game button.
+// when all cards game over pop up a “You won!” overlay with a new game button.
 
 //TODO Ninja:
 // 1. Add flipping animation effect for the card.
@@ -26,6 +26,7 @@ Card.prototype.getId = function(){
 Card.prototype.getType = function(){
   return this.type;
 }
+
 
 /** Cards Deck Logic */
 const cardsDeck = {
@@ -55,7 +56,9 @@ const cardsDeck = {
     }
   },
   isCardsIdentical: function (firstCardId, secondCardId){
+    console.log(firstCardId, secondCardId);
     const cards = this.cardsDeck.filter(card => card.getId() === firstCardId ||card.getId() === secondCardId);
+    console.log(cards);
     return cards[0].getType() === cards[1].getType();
   },
   getCardsTypeNum: function(){
@@ -63,82 +66,29 @@ const cardsDeck = {
   }
 }
 
-
-
-
-
-/** UI: draw cards on ui */
-function renderCardsUi(){
-  const cardsContainerEl = document.querySelector('.cards-container');
-  
-  cardsDeck.cardsDeck.forEach((card) => {
-    const cardEl = document.createElement('div');
-    cardEl.classList.add('card');
-    const cardInnerEl = document.createElement('div');
-    cardInnerEl.classList.add('card-pattern', getCardPattern(card.getType()), 'card-cover'); 
-    cardEl.appendChild(cardInnerEl);
-    cardsContainerEl.appendChild(cardEl);
-
-    cardEl.addEventListener('click', (event) => handleCardClick(event, card.getId()), { once: true })
-  });
-}
-/** UI: get card pattern(css class name) by its type */
-function getCardPattern(cardType){
- return 'card-pattern-type'.concat(cardType);
-}
-/** UI: handle card click */
-function handleCardClick(event, cardId){
-  console.log('card click');
-  console.log('handleDisplayCardClick');
-
-  const cardEl = event.currentTarget; // outer
-  const cardInnerEl = event.target; // inner
-  
-  // display card UI
-  cardInnerEl.classList.remove('card-cover');
-
-  gameMode.currentMove.addOpenCard(cardId, cardEl);
- 
-  if(gameMode.currentMove.isOver()) {
-  
- //TODO ->  overlay for 1 second -> card aren't clickable
-
-
-  if(gameMode.currentMove.isSuccessfulGuess()){
-    //Cards Identical
-    gameMode.currentRound.addRightGuess();
-    if (gameMode.currentRound.getRightGuesses() === cardsDeck.getCardsTypeNum()){
-      console.log("Game Over !");
-    }
-  } else {
-     //Cards Not Identical
-     console.log('not successful');
-
-  }
- 
-  gameMode.currentMove.reset();
-  }
-}
-
-/***************************************** Play Mode ***************************************************/
-
-
-
+/** Game Mode Logic */
 const gameMode = {
   currentMove: {
     openCardsCounter: 0,
     openCardsEl: [],
     openCardsId: [],
-    addOpenCard: function (cardId, cardEl) {
-      this.openCardsId.push(cardId);
-      this.openCardsEl.push(cardEl);
-      this.openCardsCounter++;
+    addCard: function (cardEl) {
+      const cardId = parseInt(cardEl.dataset.cardId);
+      if(cardId !== this.openCardsId[0]){
+        this.openCardsId.push(cardId);
+        this.openCardsEl.push(cardEl);
+        this.openCardsCounter++;
+      } 
     },
-    isOver: function () {
+    isFinished: function () {
+      if (this.openCardsCounter === 2) {console.log('finished')};
       return this.openCardsCounter === 2;
     },
     isSuccessfulGuess: function(){
       return cardsDeck.isCardsIdentical(this.openCardsId[0], this.openCardsId[1]);
+    },
+    getCardsEl: function(){
+      return this.openCardsEl;
     },
     reset: function () {
       this.openCardsCounter = 0;
@@ -164,13 +114,88 @@ const gameMode = {
   }
 }
 
+const cardsUi = {
+  cardsContainerEl: document.querySelector('.cards-container'),
+  getContainerEL: function(){
+    return this.cardsContainerEl;
+  },
+  getCardTypeCss: function(cardType){
+    return 'card-pattern-type'.concat(cardType);
+  },
+  showCard: function(cardEl){
+    const innerCardEl = cardEl.firstElementChild;
+    innerCardEl.classList.remove('card-cover');
+  },
+  hideCard: function(cardEl){
+    const innerCardEl = cardEl.firstElementChild;
+    innerCardEl.classList.add('card-cover');
+  },
+  makeCardsUnClickable: function(){
+    this.cardsContainerEl.classList.add('unclickable-mode');
+  },
+  makeCardsClickable: function(){
+    this.cardsContainerEl.classList.remove('unclickable-mode');
+  }
+}
+
+
+
+
+
+
+
+/***************************************** Play Mode ***************************************************/
+
+/** UI: draw cards on ui */
+function renderCardsUi(){ 
+  cardsDeck.cardsDeck.forEach((card) => {
+    const cardEl = document.createElement('div');
+    cardEl.classList.add('card');
+    cardEl.setAttribute('data-card-id', card.getId());
+    const cardInnerEl = document.createElement('div');
+    cardInnerEl.classList.add('card-pattern', cardsUi.getCardTypeCss(card.getType()), 'card-cover'); 
+    cardEl.appendChild(cardInnerEl);
+    cardsUi.getContainerEL().appendChild(cardEl);
+    cardEl.addEventListener('click', handleCardClick);
+  });
+}
+/** UI: handle card click */
+function handleCardClick(event){
+  const cardEl = event.currentTarget;
+  cardsUi.showCard(cardEl);
+  gameMode.currentMove.addCard(cardEl);
+  // Two open cards -> wait 1 second
+  if(gameMode.currentMove.isFinished()){ 
+    cardsUi.makeCardsUnClickable();
+    setTimeout(() => {
+      //Guess Right -> card stay open, unclickable, check for victory and the end of the game
+      if(gameMode.currentMove.isSuccessfulGuess()){
+        gameMode.currentMove.getCardsEl().forEach((openCardEl) => {
+          openCardEl.removeEventListener("click", handleCardClick);
+        });
+        gameMode.currentRound.addRightGuess();
+        if (gameMode.currentRound.getRightGuesses() === cardsDeck.getCardsTypeNum()){
+          console.log("Game Over!");
+        }
+      //Guess Wrong -> hide cards
+      } else {
+        gameMode.currentMove.getCardsEl().forEach((openCardEl) => {
+          cardsUi.hideCard(openCardEl);
+        });
+        gameMode.currentRound.addWrongGuess();
+      }
+      gameMode.currentMove.reset();
+      cardsUi.makeCardsClickable();
+    }, 1000);
+  }
+}
 
 // Cards Deck creation
 cardsDeck.create(12);
 cardsDeck.shuffle();
 
-
-
 //UI
 renderCardsUi();
+
+
 

@@ -21,6 +21,10 @@ body{
   margin: auto;
 }
 
+.unclickable-mode { /* When add this class to a container, all child's become unclickable */
+  pointer-events: none; 
+}
+
 .card{
   width: 125px;
   height: 175px;
