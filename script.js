@@ -4,7 +4,7 @@
 //when player reach page for the first time / when user choose to play new game (click btn)
 // take, player name, 
 
-//TODO header:  "new game btn", "hello player name",  wrongGuessCounter, "timer", "level"+"theme" status
+//TODO header:  "new game btn", "hello player name",  wrongGuessCounter, "timer", 
 // # levels": “easy” (12)(6 types) , medium (18)(9 types) and hard(24)(12 type)
 // create theme -> cardPattern1 css class hold background var base on theme
 
@@ -68,9 +68,6 @@ const cardsDeck = {
 /** Cards UI Logic */
 const cardsUi = {
   cardsContainerEl: document.querySelector('.cards-container'),
-  getContainerEL: function(){
-    return this.cardsContainerEl;
-  },
   getCardTypeCss: function(cardType){
     return 'card-pattern-type'.concat(cardType);
   },
@@ -87,6 +84,12 @@ const cardsUi = {
   },
   makeCardsClickable: function(){
     this.cardsContainerEl.classList.remove('unclickable-mode');
+  },
+  hideCardsContainerEl: function(){
+    this.cardsContainerEl.classList.add('hidden-mode');
+  },
+  showCardsContainerEl: function(){
+    this.cardsContainerEl.classList.remove('hidden-mode');
   }
 }
 
@@ -155,6 +158,27 @@ const gameMode = {
 
 /***************************************** Init UI & Define handlers  ***************************************************/
 
+/** Game Info UI */
+function drawGameInfoBar(){
+
+  const infoBarEl = document.querySelector('#game-info-bar');
+  infoBarEl.classList.add('game-info-bar');
+
+  const playerNameEl = document.createElement('span');
+  const wrongGuessEl = document.createElement('span');
+  const timerEl = document.createElement('span');
+
+  playerNameEl.textContent = `Hello ${gameMode.currentRound.playerName}`;
+  wrongGuessEl.textContent = 'Wrong Guess: 0';
+  timerEl.textContent = '00 : 00 : 00';
+ 
+  infoBarEl.appendChild(playerNameEl);
+  infoBarEl.appendChild(wrongGuessEl);
+  infoBarEl.appendChild(timerEl);
+
+
+}
+
 /** UI: draw cards on ui */
 function renderCardsUi(){ 
   cardsDeck.cardsDeck.forEach((card) => {
@@ -164,7 +188,7 @@ function renderCardsUi(){
     const cardInnerEl = document.createElement('div');
     cardInnerEl.classList.add('card-pattern', cardsUi.getCardTypeCss(card.getType()), 'card-cover'); 
     cardEl.appendChild(cardInnerEl);
-    cardsUi.getContainerEL().appendChild(cardEl);
+    cardsUi.cardsContainerEl.appendChild(cardEl);
     cardEl.addEventListener('click', handleCardClick);
   });
 }
@@ -234,17 +258,22 @@ function startGameHandler(event){
     //Hide PopUp
    const modal = document.querySelector('.modal');
    modal.classList.remove('modal-open');
+
+   //Init Game
+   cardsDeck.create(12);
+   cardsDeck.shuffle();
+   //Ui
+   drawGameInfoBar()
+   renderCardsUi();
+   cardsUi.showCardsContainerEl();
 }
 /***************************************** Play  ***************************************************/
 
 
 
-// Cards Deck creation
-cardsDeck.create(12);
-cardsDeck.shuffle();
 
-//UI
-renderCardsUi();
+
+cardsUi.hideCardsContainerEl();
 displayNewGamePopup();
 
 
