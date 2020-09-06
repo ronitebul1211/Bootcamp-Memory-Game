@@ -1,16 +1,4 @@
-
-
-//TODO - start game popup
-//when player reach page for the first time / when user choose to play new game (click btn)
-// take, player name, 
-
-//TODO header:  "new game btn", "hello player name",  wrongGuessCounter, "timer", 
-// # levels": “easy” (12)(6 types) , medium (18)(9 types) and hard(24)(12 type)
-// create theme -> cardPattern1 css class hold background var base on theme
-
-//TODO GameOver
-// when all cards game over pop up a “You won!” overlay with a new game button.
-
+'use-strict'
 //TODO Ninja:
 // 1. Add flipping animation effect for the card.
 // 2. Add a high score functionality, that will save the name of the person with the least amounts of wrong guesses.
@@ -90,6 +78,25 @@ const cardsUi = {
   },
   showCardsContainerEl: function(){
     this.cardsContainerEl.classList.remove('hidden-mode');
+  },
+  setTheme: function(){
+    //TODO - check for older existance of theme class & remove it
+    switch(gameMode.currentRound.getCardsTheme()){
+      case 'colors':
+        this.cardsContainerEl.classList.add('colors-theme');
+        break;
+      case 'numbers':
+        this.cardsContainerEl.classList.add('numbers-theme');
+        break;
+      case 'letters':
+        this.cardsContainerEl.classList.add();
+        break;
+
+
+    }
+  },
+  setSize: function(){
+    this.cardsContainerEl.classList.add('cards-container-'.concat(gameMode.currentRound.getLevel()));
   }
 }
 
@@ -149,7 +156,23 @@ const gameMode = {
     },
     setTheme: function(theme){
       this.theme = theme;
-    }
+    },
+    getCardsStackSize: function(){
+      switch(this.level){
+        case 'easy':
+          return 12;
+        case 'medium':
+          return 18;
+        case 'hard':
+          return 24;
+      }
+    },
+    getCardsTheme: function(){
+     return this.theme;
+    },
+    getLevel: function(){
+      return this.level;
+    },
   }
 }
 
@@ -164,23 +187,28 @@ function drawGameInfoBar(){
   const infoBarEl = document.querySelector('#game-info-bar');
   infoBarEl.classList.add('game-info-bar');
 
+  const newGameBtnEl = document.createElement('button');
   const playerNameEl = document.createElement('span');
   const wrongGuessEl = document.createElement('span');
   const timerEl = document.createElement('span');
 
+  newGameBtnEl.textContent = 'NEW GAME';
   playerNameEl.textContent = `Hello ${gameMode.currentRound.playerName}`;
   wrongGuessEl.textContent = 'Wrong Guess: 0';
   timerEl.textContent = '00 : 00 : 00';
- 
+
+  infoBarEl.appendChild(newGameBtnEl);
   infoBarEl.appendChild(playerNameEl);
   infoBarEl.appendChild(wrongGuessEl);
   infoBarEl.appendChild(timerEl);
 
-
+  //TODO - add event listeners to btn -> pupup new game interface
 }
 
 /** UI: draw cards on ui */
 function renderCardsUi(){ 
+  cardsUi.setTheme();
+  cardsUi.setSize();
   cardsDeck.cardsDeck.forEach((card) => {
     const cardEl = document.createElement('div');
     cardEl.classList.add('card');
@@ -190,8 +218,9 @@ function renderCardsUi(){
     cardEl.appendChild(cardInnerEl);
     cardsUi.cardsContainerEl.appendChild(cardEl);
     cardEl.addEventListener('click', handleCardClick);
-  });
+  }); 
 }
+
 /** UI: handle card click */
 function handleCardClick(event){
   const cardEl = event.currentTarget;
@@ -208,6 +237,7 @@ function handleCardClick(event){
         });
         gameMode.currentRound.addRightGuess();
         if (gameMode.currentRound.getRightGuesses() === cardsDeck.getCardsTypeNum()){
+          //TODO pop up a “You won!” modal with new game option
           console.log("Game Over!");
         }
       //Guess Wrong -> hide cards
@@ -260,7 +290,7 @@ function startGameHandler(event){
    modal.classList.remove('modal-open');
 
    //Init Game
-   cardsDeck.create(12);
+   cardsDeck.create(gameMode.currentRound.getCardsStackSize());
    cardsDeck.shuffle();
    //Ui
    drawGameInfoBar()

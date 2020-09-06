@@ -6,6 +6,35 @@
   margin: 0;
 }
 
+.colors-theme {
+  --type1-bg: #8E44AD;;
+  --type2-bg: #2980B9;
+  --type3-bg: #E74C3C;
+  --type4-bg: #2ECC71;
+  --type5-bg: #900C3E;
+  --type6-bg: #FFC300;
+  --type7-bg: #4F820D;
+  --type8-bg: #eeb0bb;
+  --type9-bg: #CE7600;
+  --type10-bg: #90F7EF;
+  --type11-bg: #113251;
+  --type12-bg: #434644;
+}
+.numbers-theme {
+  --type1-bg: url('img/1.png');
+  --type2-bg: url('img/2.png');
+  --type3-bg: url('img/3.png');
+  --type4-bg: url('img/4.png');
+  --type5-bg: url('img/5.png');
+  --type6-bg: url('img/6.png');
+  --type7-bg: url('img/7.png');
+  --type8-bg: url('img/8.png');
+  --type9-bg: url('img/9.png');
+  --type10-bg: url('img/10.png');
+  --type11-bg: url('img/11.png');
+  --type12-bg: url('img/12.png');
+}
+
 body{
   background: pink;
   height: 100vh;
@@ -24,10 +53,18 @@ body{
   background: white;
   width: fit-content;
   display: grid;
-  grid-template-columns: repeat(4 , 1fr); 
   gap: 15px;
   padding: 15px;
   margin: auto;
+}
+.cards-container-easy{
+  grid-template-columns: repeat(4 , 1fr); 
+}
+.cards-container-medium{
+  grid-template-columns: repeat(6 , 1fr); 
+}
+.cards-container-hard{
+  grid-template-columns: repeat(8 , 1fr); 
 }
 .hidden-mode{
   visibility: hidden; 
@@ -46,22 +83,40 @@ body{
   height: 100%;
 }
 .card-pattern-type1{
-  background: #8E44AD;
+  background: var(--type1-bg);
 }
 .card-pattern-type2{
-  background: #2980B9;
+  background: var(--type2-bg);
 }
 .card-pattern-type3{
-  background: #E74C3C;
+  background: var(--type3-bg);
 }
 .card-pattern-type4{
-  background: #2ECC71;
+  background: var(--type4-bg);
 }
 .card-pattern-type5{
-  background: #900C3E;
+  background: var(--type5-bg);
 }
 .card-pattern-type6{
-  background: #FFC300;
+  background: var(--type6-bg);
+}
+.card-pattern-type7{
+  background: var(--type7-bg);
+}
+.card-pattern-type8{
+  background: var(--type8-bg);
+}
+.card-pattern-type9{
+  background: var(--type9-bg);
+}
+.card-pattern-type10{
+  background: var(--type10-bg);
+}
+.card-pattern-type11{
+  background: var(--type11-bg);
+}
+.card-pattern-type12{
+  background: var(--type12-bg);
 }
 .card-cover{
   background: black;
